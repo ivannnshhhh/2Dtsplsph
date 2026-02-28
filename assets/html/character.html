@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Character</title>
+    <link rel="stylesheet" href="../css/fonts.css">
+    <style>
+        /* @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap'); */
+        body {
+            background: #2c3e50;
+            color: #fff;
+            font-family: 'Press Start 2P', cursive;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+            color: #f1c40f;
+            text-shadow: 2px 2px #c0392b;
+        }
+
+        .characters {
+            display: flex;
+            gap: 3rem;
+        }
+
+        .char-option {
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            transition: transform 0.1s;
+        }
+
+        .char-option.selected .avatar {
+            border-color: #f1c40f;
+            box-shadow: 0 0 0 4px rgba(241,196,15,0.6);
+        }
+
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            border: 4px solid #fff;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .avatar::after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 50%;
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+        }
+
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-family: 'Press Start 2P', cursive;
+            cursor: pointer;
+            font-size: 10px;
+            margin-top: 2rem;
+            border-radius: 4px;
+            box-shadow: 0 4px 0 #2980b9;
+            transition: transform 0.1s;
+        }
+
+        button:active { transform: translateY(4px); box-shadow: none; }
+        button:hover { filter: brightness(1.1); }
+
+        /* simple modal */
+        #modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            visibility: hidden;
+        }
+
+        #modal-overlay.visible { visibility: visible; }
+
+        #modal-box {
+            background: #fff;
+            color: #2c3e50;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 300px;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Select Your Character</h1>
+    <div class="characters">
+        <div class="char-option" id="male">
+            <canvas id="male-canvas" class="avatar" width="80" height="80"></canvas>
+            <span>Male</span>
+        </div>
+        <div class="char-option" id="female">
+            <canvas id="female-canvas" class="avatar" width="80" height="80"></canvas>
+            <span>Female</span>
+        </div>
+    </div>
+
+    <button id="btn-back">Back to Menu</button>
+
+    <div id="modal-overlay">
+        <div id="modal-box">
+            <p id="modal-text"></p>
+            <button id="modal-ok">OK</button>
+        </div>
+    </div>
+
+    <script>
+        const options = document.querySelectorAll('.char-option');
+        const modal = document.getElementById('modal-overlay');
+        const modalText = document.getElementById('modal-text');
+        const modalOk = document.getElementById('modal-ok');
+
+        options.forEach(opt => {
+            opt.addEventListener('click', () => {
+                const choice = opt.id; // male or female
+                localStorage.setItem('selectedCharacter', choice);
+                // mark selected visually
+                options.forEach(o => o.classList.remove('selected'));
+                opt.classList.add('selected');
+                showModal('Success! You selected ' + choice + '.');
+            });
+        });
+
+        // on load highlight previous selection if exists
+        const existing = localStorage.getItem('selectedCharacter');
+        if (existing) {
+            const el = document.getElementById(existing);
+            if (el) el.classList.add('selected');
+        }
+
+        // draw the avatar canvases
+        function drawAvatar(ctx, isFemale) {
+            // mimic game front-facing down sprite without animation
+            const scale = 3;
+            const skinColor = "#ffdbac";
+            const hairColor = "#1a1a1a";
+            const topColor = "#d7bde2";
+            const skirtColor = "#fadbd8";
+            const shirtColor = isFemale ? topColor : "#e74c3c";
+            const pantsColor = "#34495e";
+            const shoeColor = "#222";
+            const accessoryColor = "#f39c12";
+
+            ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
+            ctx.save();
+            ctx.scale(scale, scale);
+
+            // legs / skirt
+            if (isFemale) {
+                ctx.fillStyle = skirtColor;
+                ctx.fillRect(8, 16, 9, 6);
+            } else {
+                ctx.fillStyle = pantsColor;
+                ctx.fillRect(9, 16, 3, 8);
+                ctx.fillRect(13, 16, 3, 8);
+            }
+            // shoes
+            ctx.fillStyle = shoeColor;
+            ctx.fillRect(8, 24, 4, 2);
+            ctx.fillRect(12, 24, 4, 2);
+
+            // shirt/top
+            ctx.fillStyle = shirtColor;
+            ctx.fillRect(7, 8, 11, 9);
+            if (isFemale) {
+                ctx.fillStyle = accessoryColor;
+                ctx.fillRect(7 + (11/2 - 1), 8, 2, 1);
+            }
+
+            // arms
+            ctx.fillStyle = skinColor;
+            ctx.fillRect(5, 9, 2, 6);
+            ctx.fillRect(18, 9, 2, 6);
+            ctx.fillStyle = shirtColor;
+            ctx.fillRect(5, 8, 2, 3);
+            ctx.fillRect(18, 8, 2, 3);
+
+            // body/face
+            ctx.fillStyle = skinColor;
+            ctx.fillRect(9, 3, 7, 6);
+            ctx.fillStyle = "#000";
+            ctx.fillRect(10, 5, 1, 1);
+            ctx.fillRect(14, 5, 1, 1);
+            ctx.fillStyle = "#d35400";
+            ctx.fillRect(11, 7, 3, 1);
+
+            // hair
+            ctx.fillStyle = hairColor;
+            ctx.fillRect(8, 1, 9, 3);
+            ctx.fillRect(8, 1, 1, 5);
+            ctx.fillRect(16, 1, 1, 5);
+            if (isFemale) {
+                ctx.fillStyle = accessoryColor;
+                ctx.fillRect(10, 1, 2, 1);
+            }
+
+            ctx.restore();
+        }
+
+        // actually draw both canvases
+        const mctx = document.getElementById('male-canvas').getContext('2d');
+        const fctx = document.getElementById('female-canvas').getContext('2d');
+        drawAvatar(mctx, false);
+        drawAvatar(fctx, true);
+
+        function showModal(message) {
+            modalText.textContent = message;
+            modal.classList.add('visible');
+        }
+
+        modalOk.addEventListener('click', () => {
+            modal.classList.remove('visible');
+        });
+
+        document.getElementById('btn-back').addEventListener('click', () => {
+            window.location.href = '../../index.html';
+        });
+    </script>
+</body>
+</html>
