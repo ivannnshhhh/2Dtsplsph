@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teenage Single Parent Life Simulator PH</title>
+    <link rel="stylesheet" href="../css/game.css">
+    <link rel="icon" type="image/png" href="../images/logo.png">
+</head>
+<body>
+
+    <div id="nav-bar">
+        <button id="btn-back">Back to Menu</button>
+        <button id="btn-reset" class="danger">Reset Game</button>
+    </div>
+
+    <div id="top-hud" class="hud-bar">
+        <div class="stat-box">
+            <label>Energy</label>
+            <progress id="p-energy" value="100" max="100"></progress>
+        </div>
+        <div class="stat-box">
+            <label>Stress</label>
+            <progress id="p-stress" value="0" max="100"></progress>
+        </div>
+        <div class="stat-box">
+            <label>Baby Health</label>
+            <progress id="p-baby" value="100" max="100"></progress>
+        </div>
+        <div class="stat-box">
+            <label>School</label>
+            <progress id="p-school" value="0" max="100"></progress>
+        </div>
+        <div class="stat-box">
+            <label>Money (PHP)</label>
+            <span id="val-money">₱3000</span>
+        </div>
+        <div class="stat-box">
+            <label>Time</label>
+            <span id="val-time">Month 1 - Day 1</span>
+            <span id="val-clock">Morning</span>
+        </div>
+    </div>
+
+    <div id="game-container">
+        <canvas id="gameCanvas" width="960" height="704"></canvas>
+        
+        <div id="ui-layer">
+        </div>
+
+        <!-- Action Lock UI -->
+        <div id="action-lock-overlay" class="hidden">
+            <span id="action-lock-text"></span>
+        </div>
+
+        <!-- Event Modal -->
+        <div id="modal-overlay" class="hidden">
+            <div class="dialog-box">
+                <h2 id="modal-title" class="dialog-title">Event Title</h2>
+                <p id="modal-text" class="dialog-text">Event description goes here.</p>
+                <div id="modal-edu" class="edu-note hidden"></div>
+                <div id="modal-actions">
+                    <!-- Buttons injected here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="controls-hint">
+        WASD / Arrows to Move | SPACE to Interact
+    </div>
+
+<script src="../js/game.js"></script>
+</body>
+</html>
